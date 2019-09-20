@@ -1,0 +1,27 @@
+server:
+  port: 8001
+spring:
+  application:
+    name: user-consumer
+
+eureka:
+  client:
+    service-url: # EurekaServer地址
+      defaultZone: http://127.0.0.1:8003/eureka,http://127.0.0.1:8004/eureka
+    registry-fetch-interval-seconds: 5
+  instance:
+    instance-id: ${spring.application.name}:${server.port}
+    prefer-ip-address: true # 当调用getHostname获取实例的hostname时，返回ip而不是host名称
+#    ip-address: 127.0.0.1 # 指定自己的ip信息，不指定的话会自己寻找
+###################################负载均衡配置(随机模式)###############################################
+user-service:
+  ribbon:
+    NFLoadBalancerRuleClassName: com.netflix.loadbalancer.RandomRule
+    ConnectTimeout: 250 # Ribbon的连接超时时间
+    ReadTimeout: 1000 # Ribbon的数据读取超时时间
+    OkToRetryOnAllOperations: true # 是否对所有操作都进行重试
+    MaxAutoRetriesNextServer: 1 # 切换实例的重试次数
+    MaxAutoRetries: 1 # 对当前实例的重试次数
+
+service-instance:
+  name: user-service
